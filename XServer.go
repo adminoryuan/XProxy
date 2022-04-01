@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/XProxy/Http"
+	core "github.com/XProxy/ProxyCore"
 	"github.com/XProxy/untity"
 )
 
@@ -35,13 +36,14 @@ func (h HttpXproxy) HandleReq(conn net.Conn) {
 
 		n, _ := conn.Read(bodys)
 
-		req := HttpUntity.AnalyHttp(bodys[:n])
-
-		R := RwHandel{}
-
-		addr, e := untity.PaserIP(req.Url)
+		url, err := HttpUntity.AnalyHttpReqUrl(bodys[:n])
+		if err != nil {
+			fmt.Println("解析出错")
+			return
+		}
+		addr, e := untity.PaserIP(url)
 		if e != nil {
-
+			fmt.Println("协议解析出错")
 			break
 		}
 		fmt.Println(addr)
@@ -49,15 +51,15 @@ func (h HttpXproxy) HandleReq(conn net.Conn) {
 		if err != nil {
 			fmt.Println("链接失败")
 		}
-		R.ReadChanle = make(chan []byte)
-		R.WriteChanle = make(chan []byte)
-		go R.OnRead(cli)
+		xProxy := core.XProxyCore{}
 
-		go R.OnWrite(cli)
+		cli.Write(bodys[:n])
 
-		R.WriteChanle <- bodys[:n]
+		xProxy.SetnetCli(cli)
 
-		conn.Write(<-R.ReadChanle)
+		xProxy.SetProxyCli(conn)
+
+		xProxy.Runproxy()
 
 	}
 

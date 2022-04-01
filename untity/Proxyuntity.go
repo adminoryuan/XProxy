@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+//解析地址
 func PaserIP(DomainName string) (string, error) {
 	DomainName = strings.ReplaceAll(DomainName, "/", "")
 	DomainName = strings.ReplaceAll(DomainName, "http:", "")
