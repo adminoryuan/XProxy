@@ -9,15 +9,32 @@ import (
 
 //解析地址
 func PaserIP(DomainName string) (string, error) {
-	DomainName = strings.ReplaceAll(DomainName, "/", "")
-	DomainName = strings.ReplaceAll(DomainName, "http:", "")
-	if strings.EqualFold(DomainName, "") {
-		return "", errors.New("地址错误")
+	fmt.Println(DomainName)
+	port := 80
+	//
+
+	if strings.Contains(DomainName, ":443") {
+		port = 443
+		DomainName = strings.ReplaceAll(DomainName, ":443", "")
+	} else {
+		h := strings.Split(DomainName, "//")
+		if len(h) < 2 {
+			return "", errors.New("error")
+		}
+		h = strings.Split(h[1], "/")
+
+		DomainName = h[0]
+
+		if strings.EqualFold(DomainName, "") {
+
+			return "", errors.New("地址错误")
+		}
 	}
 
 	c, err := net.ResolveIPAddr("ip", DomainName)
 	if err != nil {
+
 		return "", err
 	}
-	return fmt.Sprintf("%s:80", c.IP.String()), nil
+	return fmt.Sprintf("%s:%d", c.IP.String(), port), nil
 }

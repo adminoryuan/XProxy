@@ -17,6 +17,7 @@ func (t *HttpUntity) AnalyHttpReqUrl(reqByte []byte) (string, error) {
 
 	firstHttpRow := strings.Split(HttpAnals[0], " ")
 
+	fmt.Println(firstHttpRow)
 	if len(firstHttpRow) < 2 {
 		return "", errors.New("协议解析出错")
 	}
@@ -35,7 +36,7 @@ func (t *HttpUntity) ReadHttp(reder io.Reader) (HttpReq, error) {
 
 	Res := make([]byte, 128)
 
-	httpHeaders := make([]byte, 512)
+	httpHeaders := make([]byte, 1024)
 	n, _ := reder.Read(httpHeaders)
 	Res = append(Res, httpHeaders[:n]...)
 	httpRow := strings.Split(string(httpHeaders), "\r\n")
