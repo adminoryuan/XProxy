@@ -24,25 +24,43 @@ func (t *HttpUntity) AnalyHttpReqUrl(reqByte []byte) (string, error) {
 	return firstHttpRow[1], nil
 }
 
+type HttpReq struct {
+	IsConnection bool //是否是长链接
+	Url          string
+	Body         []byte
+}
+
 //读取一个完整的Http报文
-func (t *HttpUntity) ReadHttp(reder io.Reader) ([]byte, error) {
+func (t *HttpUntity) ReadHttp(reder io.Reader) (HttpReq, error) {
 
 	Res := make([]byte, 128)
 
-	httpHeaders := make([]byte, 256)
+	httpHeaders := make([]byte, 512)
 	n, _ := reder.Read(httpHeaders)
 	Res = append(Res, httpHeaders[:n]...)
 	httpRow := strings.Split(string(httpHeaders), "\r\n")
-	httplenth := 0
-	for _, row := range httpRow {
-		if strings.Contains(row, "Content-Length") {
 
+	httplenth := 0
+	h := HttpReq{}
+
+	h.Url = strings.Split(httpRow[0], " ")[1]
+
+	for _, row := range httpRow {
+
+		if strings.Contains(row, "Connection: keep-alive") {
+
+			h.IsConnection = true
+			h.Body = Res
+
+			return h, nil
+		}
+		if strings.Contains(row, "Content-Length") {
 			kv := strings.Split(row, ": ")
 
 			val, err := strconv.Atoi(kv[1])
 			if err != nil {
 				fmt.Println("出错了")
-				return []byte(""), nil
+				return h, err
 			}
 			httplenth = val
 			break
@@ -59,6 +77,8 @@ func (t *HttpUntity) ReadHttp(reder io.Reader) ([]byte, error) {
 		Res = append(Res, httpHeaders[:n]...)
 		httplenth -= 256
 	}
+	h.IsConnection = false
+	h.Body = Res
 	fmt.Println(string(Res))
-	return Res, nil
+	return h, nil
 }

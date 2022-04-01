@@ -11,6 +11,8 @@ type XProxyCore struct {
 
 	closeChanle chan struct{}
 
+	Serverip string //服务器ip地址
+
 	netCli net.Conn //代理端与目标端建立的请求
 
 }
@@ -37,6 +39,7 @@ func (x XProxyCore) proxyRead() {
 			break
 		}
 		x.netCli.Write(body[:n])
+
 	}
 }
 
@@ -56,12 +59,15 @@ func (x XProxyCore) cliRead() {
 			fmt.Println("关闭与服务器链接")
 			return
 		default:
-			bodys := make([]byte, 1024)
+			bodys := make([]byte, 5012)
 			n, err := x.netCli.Read(bodys)
 			if err == io.EOF {
 				fmt.Println("服务器链接被关闭")
-				x.proxyCli.Write(bodys[:n])
+				x.netCli.Close()
+				return
 			}
+			fmt.Println(string(bodys[:n]))
+			x.proxyCli.Write(bodys[:n])
 
 		}
 	}

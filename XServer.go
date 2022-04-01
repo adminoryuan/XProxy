@@ -32,34 +32,36 @@ func (h HttpXproxy) StartXproxy(addr string) {
 func (h HttpXproxy) HandleReq(conn net.Conn) {
 	for {
 
-		bodys := make([]byte, 5012)
+		res, _ := HttpUntity.ReadHttp(conn)
 
-		n, _ := conn.Read(bodys)
-
-		url, err := HttpUntity.AnalyHttpReqUrl(bodys[:n])
+		url, err := HttpUntity.AnalyHttpReqUrl([]byte(res.Body))
 		if err != nil {
 			fmt.Println("解析出错")
 			return
 		}
 		addr, e := untity.PaserIP(url)
 		if e != nil {
-			fmt.Println("协议解析出错")
+			//	fmt.Println("域名解析出错")
 			break
 		}
-		fmt.Println(addr)
 		cli, err := net.Dial("tcp", addr)
 		if err != nil {
 			fmt.Println("链接失败")
 		}
-		xProxy := core.XProxyCore{}
 
-		cli.Write(bodys[:n])
+		if res.IsConnection {
+			xProxy := core.XProxyCore{Serverip: addr}
+			cli.Write(res.Body)
+			xProxy.SetnetCli(cli)
 
-		xProxy.SetnetCli(cli)
+			xProxy.SetProxyCli(conn)
 
-		xProxy.SetProxyCli(conn)
+			xProxy.Runproxy()
+		} else {
 
-		xProxy.Runproxy()
+			cli.Write(res.Body)
+
+		}
 
 	}
 

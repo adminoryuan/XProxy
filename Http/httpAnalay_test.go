@@ -18,11 +18,12 @@ func TestHttprasr(t *testing.T) {
 		return
 	}
 
-	ReqHttp := "GET https://sp3.baidu.com/-0U_dTmfKgQFm2e88IuM_a/ps_fp.htm?pid=ps&fp=undefined&im=undefined&wf=undefined&br=3&qid=ca587372000038a4&bi=ED970D370B4B0059A7C508C5F0C6CA6C:FG=1&psid=ED970D370B4B0059C2CEB86AEE4E8CB8 HTTP/1.1\r\n"
+	ReqHttp := "GET http://14.215.177.38/ HTTP/1.1\r\n"
 	ReqHttp += "Host: sp3.baidu.com\r\n"
 	ReqHttp += "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0\r\n"
-	ReqHttp += "Connection: keep-alive"
-	ReqHttp += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+	ReqHttp += "Connection: keep-alive\r\n"
+	ReqHttp += "Cookie: COOKIE_SESSION=16_0_0_1_1_0_1_0_0_0_0_0_0_0_3_0_1641372984_0_1641372981%7C2%230_0_1641372981%7C1; BD_HOME=1; BD_UPN=123353\r\n"
+	ReqHttp += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8\r\n"
 	ReqHttp += "\r\n\r\n"
 	ReqByte := []byte(ReqHttp)
 
