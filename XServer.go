@@ -15,6 +15,7 @@ type HttpXproxy struct{}
 
 var HttpUntity Http.HttpUntity = Http.HttpUntity{}
 
+//复用[]byte
 var CachePool = sync.Pool{
 	New: func() interface{} {
 		return make([]byte, 512)
@@ -22,7 +23,7 @@ var CachePool = sync.Pool{
 }
 
 //启动一个http代理服务
-func (h HttpXproxy) StartXproxy(addr string) {
+func (h *HttpXproxy) StartXproxy(addr string) {
 
 	fmt.Println("Start HyProxy ")
 	fmt.Printf("addr:%s\n", addr)
@@ -40,19 +41,18 @@ func (h HttpXproxy) StartXproxy(addr string) {
 	}
 
 }
-func (h HttpXproxy) HandleReq(conn net.Conn) {
-
+func (h *HttpXproxy) HandleReq(conn net.Conn) {
+	fmt.Printf("用户主机%s使用了代理", conn.RemoteAddr().String())
 	res := CachePool.Get().([]byte)
 	n, er := conn.Read(res[:])
 	if er == io.EOF {
-
+		CachePool.Put(res)
 		return
 	}
 	host, err := HttpUntity.AnalyHttpReqUrl(res[:n])
 
 	CachePool.Put(res)
 
-	fmt.Println(host)
 	if err != nil {
 		fmt.Println("解析出错")
 		return
@@ -72,12 +72,11 @@ func (h HttpXproxy) HandleReq(conn net.Conn) {
 		return
 	}
 	if strings.Contains(addr, ":443") {
-		fmt.Println("pk")
+
 		conn.Write([]byte("HTTP/1.0 200 ok\r\n\r\n"))
 	} else {
 		cli.Write(res[:n])
 	}
-	fmt.Println(addr)
 
 	go io.Copy(cli, conn)
 	go io.Copy(conn, cli)

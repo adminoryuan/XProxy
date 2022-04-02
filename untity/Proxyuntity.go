@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-//解析地址
+//解析域名
 func PaserIP(DomainName string) (string, error) {
 	fmt.Println(DomainName)
 	port := 80
