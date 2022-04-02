@@ -6,5 +6,5 @@ func main() {
 
 	runtime.GOMAXPROCS(10)
 	r := HttpXproxy{}
-	r.StartXproxy("127.0.0.1:9092")
+	r.StartXproxy("0.0.0.0:9092")
 }
