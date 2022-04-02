@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/XProxy/Http"
+	"github.com/XProxy/ProxyCore"
 	"github.com/XProxy/untity"
 )
 
@@ -78,19 +79,20 @@ func (h *HttpXproxy) HandleReq(conn net.Conn) {
 		cli.Write(res[:n])
 	}
 
-	go io.Copy(cli, conn)
-	go io.Copy(conn, cli)
+	// go io.Copy(cli, conn)
+	// go io.Copy(conn, cli)
 	// Pool.EntryChannel <- t1
 	// Pool.EntryChannel <- t2
 	//cli.Write(res)
 
 	// if res.IsConnection {
-	// 	xProxy := core.XProxyCore{Serverip: addr}
+	xProxy := ProxyCore.XProxyCore{Serverip: addr}
 	// 	cli.Write(res.Body)
-	// 	xProxy.SetnetCli(cli)
+	xProxy.SetnetCli(cli)
 
-	// 	xProxy.SetProxyCli(conn)
+	xProxy.SetProxyCli(conn)
 
+	go xProxy.Runproxy()
 	// 	xProxy.Runproxy()
 	// } else {
 

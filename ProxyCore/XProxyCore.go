@@ -33,7 +33,7 @@ func (x XProxyCore) proxyRead() {
 		body := make([]byte, 1024)
 		n, err := x.proxyCli.Read(body)
 		if err == io.EOF {
-			fmt.Println("被代理端链接被关闭")
+			//fmt.Println("被代理端链接被关闭")
 			x.proxyCli.Close()
 			x.closeChanle <- struct{}{}
 			break
@@ -59,14 +59,14 @@ func (x XProxyCore) cliRead() {
 			fmt.Println("关闭与服务器链接")
 			return
 		default:
-			bodys := make([]byte, 5012)
+			bodys := make([]byte, 1024)
 			n, err := x.netCli.Read(bodys)
 			if err == io.EOF {
 				fmt.Println("服务器链接被关闭")
 				x.netCli.Close()
 				return
 			}
-			fmt.Println(string(bodys[:n]))
+			//fmt.Println(string(bodys[:n]))
 			x.proxyCli.Write(bodys[:n])
 
 		}
