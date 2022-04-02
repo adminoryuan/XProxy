@@ -12,7 +12,8 @@ type XProxyCore struct {
 
 	closeChanle chan struct{}
 
-	pool     sync.Pool
+	pool sync.Pool //复用池
+
 	Serverip string //服务器ip地址
 
 	netCli net.Conn //代理端与目标端建立的请求
