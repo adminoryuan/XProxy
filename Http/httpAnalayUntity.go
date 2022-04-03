@@ -25,12 +25,6 @@ func (t *HttpUntity) AnalyHttpReqUrl(reqByte []byte) (string, error) {
 	return firstHttpRow[1], nil
 }
 
-type HttpReq struct {
-	IsConnection bool //是否是长链接
-	Url          string
-	Body         []byte
-}
-
 //读取一个完整的Http报文
 func (t *HttpUntity) ReadHttp(reder io.Reader) (HttpReq, error) {
 

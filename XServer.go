@@ -21,8 +21,6 @@ var HttpUntity Http.HttpUntity = Http.HttpUntity{}
 //启动一个http代理服务
 func (h *HttpXproxy) StartXproxy(addr string) {
 
-	fmt.Println("Start HyProxy ")
-	fmt.Printf("addr:%s\n", addr)
 	h.cachePool = sync.Pool{
 		New: func() interface{} {
 			return make([]byte, 512)
@@ -32,8 +30,12 @@ func (h *HttpXproxy) StartXproxy(addr string) {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("Start HyProxy ")
+	fmt.Printf("addr:%s\n", addr)
+
 	for {
 		cli, err := S.Accept()
+
 		if err != nil {
 			fmt.Println("链接出错")
 			continue
@@ -44,6 +46,7 @@ func (h *HttpXproxy) StartXproxy(addr string) {
 }
 func (h *HttpXproxy) HandleReq(conn net.Conn) {
 	fmt.Printf("用户主机%s使用了代理", conn.RemoteAddr().String())
+
 	res := h.cachePool.Get().([]byte)
 	n, er := conn.Read(res[:])
 	if er == io.EOF {
